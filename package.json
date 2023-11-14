@@ -1,0 +1,16 @@
+{
+  "name": "picture-archiver",
+  "version": "0.0.1",
+  "description": "Traverse a directory full of images and copy the images and movies into a new year/month/day directory structure creating thumbnails and static HTML for simple web navigation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anders Brownworth",
+  "license": "MIT",
+  "dependencies": {
+    "ffmpeg-extract-frame": "^1.0.2",
+    "heic-convert": "^2.0.0",
+    "sharp": "^0.32.6"
+  }
+}
