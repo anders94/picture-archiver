@@ -97,35 +97,6 @@ const processFile = async (dirPath, fileName) => {
 
 };
 
-const buildHTML = async (dirPath) => {
-    const files = await fs.readdirSync(dirPath, {withFileTypes: true});
-
-    for (const file of files) {
-	if (file.isDirectory())
-	    await buildHTML(path.join(dirPath, file.name));
-
-    }
-
-    const content = [];
-    const contentRE = new RegExp(/\.(jpg|jpeg|png|gif|heic)$/, 'i');
-
-    for (const file of files) {
-	if (!file.isDirectory() && contentRE.test(file.name) && file.name.indexOf('-thumbnail.jpg') == -1) {
-	    console.log('working on', file.path, file.name);
-	    content.push(file.name);
-
-	}
-
-    }
-
-    if (content.length > 0) {
-	console.log('Building HTML for', dirPath);
-	console.log(content);
-
-    }
-
-};
-
 (async () => {
     if (! process.argv[2]) {
 	console.error('Please provide a directory path as an argument');
@@ -134,7 +105,5 @@ const buildHTML = async (dirPath) => {
     }
 
     await processDirectory(process.argv[2]);
-
-    await buildHTML(archiveDirPath);
 
 })();

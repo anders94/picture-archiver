@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AndersBrownworth.com</title>
+    <meta property="og:url" content="https://andersbrownworth.com/">
+    <meta property="og:title" content="Anders Brownworth">
+    <meta property="og:description" content="Things I find intereting.">
+    <meta property="og:image" content="https://andersbrownworth.com/img/meta-image.png">
+    <link href="/css/lib/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/site.css" rel="stylesheet">
+    <script src="/js/lib/bootstrap.bundle.min.js"></script>
+    <script src="/js/lib/jquery.min.js"></script>
+    <!-- Google tag (gtag.js)-->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4YK08051KH"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-4YK08051KH');
+    </script>
+</head>
+<body>
+    <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="accountModalLabel">Email Authentication</h1>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <button class="nav-link" id="nav-signup-tab" data-bs-toggle="tab" data-bs-target="#nav-signup" type="button" role="tab" aria-controls="nav-signup">Signup</button>
+                            <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login" type="button" role="tab" aria-controls="nav-login" aria-selected>Login</button>
+                            <button class="nav-link" id="nav-forgot-tab" data-bs-toggle="tab" data-bs-target="#nav-forgot" type="button" role="tab" aria-controls="nav-contact">Forgot Password</button>
+                        </div>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane" id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" tabindex="0">
+                                <form class="needs-validation" id="signupForm" method="post" action="/authenticate/signup" novalidate>
+                                    <div class="p-2">
+                                        <p>Create an account by filling out the fields below.</p>
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="fullName" type="text" name="fullName" placeholder="Full Name" required>
+                                            <label for="fullName">Full Name</label>
+                                            <div class="invalid-tooltip">We need a name for you!</div>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="signupEmail" type="email" name="signupEmail" placeholder="name@example.com" onKeyUp="emailChange(&quot;#signupEmail&quot;)" required>
+                                            <label for="signupEmail">Email Address</label>
+                                            <div class="invalid-tooltip">Please enter a valid email address.</div>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="signupPassword" type="password" name="signupPassword" placeholder="Password" required>
+                                            <label for="signupPassword">Password</label>
+                                            <div class="invalid-tooltip">Enter a password to secure your account.</div>
+                                        </div>
+                                        <div class="form-floating">
+                                            <!--button.btn.btn-primary.float-end(type='submit') Signup-->
+                                            <button class="btn btn-secondary float-end" type="submit">Signup (not yet implemented)</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="tab-pane show active" id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" tabindex="0">
+                                <form class="needs-validation" id="loginForm" method="post" action="/authenticate/login" novalidate>
+                                    <div class="p-2">
+                                        <p>Give us your email and password to login.</p>
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="loginEmail" type="email" name="loginEmail" placeholder="name@example.com" onKeyUp="emailChange(&quot;#loginEmail&quot;)" required>
+                                            <label for="loginEmail">Email Address</label>
+                                            <div class="invalid-tooltip">Please enter your email address.</div>
+                                        </div>
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="loginPassword" type="password" name="loginPassword" placeholder="Password" required>
+                                            <label for="loginPassword">Password</label>
+                                            <div class="invalid-tooltip">We'll need your password to login.</div>
+                                        </div>
+                                        <div class="form-floating">
+                                            <button class="btn btn-primary float-end" type="submit">Login</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="tab-pane" id="nav-forgot" role="tabpanel" aria-labelledby="nav-forgot-tab" tabindex="0">
+                                <form class="needs-validation" id="forgotPasswordForm" method="post" action="/authenticate/forgotPassword" novalidate>
+                                    <div class="p-2">
+                                        <p>Enter your email address and we will email you a reset link.</p>
+                                        <div class="form-floating mb-3">
+                                            <input class="form-control" id="forgotEmail" type="email" name="forgotEmail" placeholder="name@example.com" onKeyUp="emailChange(&quot;#forgotEmail&quot;)" required>
+                                            <label for="forgotEmail">Email Address</label>
+                                            <div class="invalid-tooltip">Please enter the email address you used when you signed up!</div>
+                                        </div>
+                                        <div class="form-floating">
+                                            <!--button.btn.btn-primary.float-end(type='submit') Send Reset Link-->
+                                            <button class="btn btn-secondary float-end" type="submit">Send Reset Link (not yet implemented)</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+                <!--.modal-footer-->
+                <!--.modal-headerh1#accountModalLabel.modal-title.fs-5 Wallet Authentication
+                button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')-->
+                <!--.modal-bodybutton#connect.btn.btn-primary.float-end(type='button', onClick='siwe') Sign-In with Ethereum
+                -->
+            </div>
+        </div>
+    </div>
+    <script>
+    (() => {
+        // Loop over forms and prevent submission if not validated
+        const forms = document.querySelectorAll('.needs-validation')
+
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // focus on email or password when modal opens
+        $('#accountModal').on('shown.bs.modal', e => {
+            if ($('#loginEmail').val() == '') {
+                $('#loginEmail').focus();
+            }
+            else {
+                $('#loginPassword').focus();
+            }
+        });
+
+        $('#signupEmail').val(localStorage.getItem('email') ? localStorage.getItem('email') : '');
+        $('#loginEmail').val(localStorage.getItem('email') ? localStorage.getItem('email') : '');
+        $('#forgotEmail').val(localStorage.getItem('email') ? localStorage.getItem('email') : '');
+
+    })();
+
+    const emailChange = (field) => {
+        localStorage.setItem('email', $(field).val());
+        if (field != '#signupEmail')
+            $('#signupEmail').val($(field).val());
+        if (field != '#loginEmail')
+            $('#loginEmail').val($(field).val());
+        if (field != '#forgotEmail')
+            $('#forgotEmail').val($(field).val());
+    };
+    </script>
+    <nav class="navbar navbar-expand-lg fixed-top bg-body-tertiary border-bottom">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <img class="d-inline-block align-text-top" src="/img/ab-512.png" alt="Logo" width="64" height="64">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://andersbrownworth.com/blockchain/">Blockchain Demo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pictures">Pictures</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#accountModal">
+                            <svg class="bi bi-person-circle" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"></path>
+                                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"></path>
+                            </svg>
+                            &nbsp; Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search" action="/search" method="POST">
+                    <div class="input-group">
+                        <input class="form-control" name="query" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-secondary" type="submit">View</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+@@content
+    </div>
+    <div class="container">
+        <footer class="py-3 my-4">
+            <ul class="nav justify-content-center border-bottom pb-3 mb-3">
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-body-secondary" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-body-secondary" href="https://andersbrownworth.com/blockchain/">Blockchain Demo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-body-secondary" href="/pictures">Pictures</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2 text-body-secondary" href="/about">About</a>
+                </li>
+            </ul>
+            <p class="text-center text-body-secondary">&copy; 2023 Anders Brownworth</p>
+        </footer>
+    </div>
+</body>
+</html>
