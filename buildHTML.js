@@ -4,37 +4,36 @@ const path = require('path');
 const archiveDirPath = './archive/';
 const templateHTML = 'template.html';
 
-const processDirectory = async (dirPath) => {
+const recurseForContent = async (dirPath) => {
     const files = await fs.readdirSync(dirPath, {withFileTypes: true});
+
+    let foundThumbnail = false;
 
     for (const file of files) {
 	if (file.isDirectory())
-	    await processDirectory(path.join(dirPath, file.name));
+	    await recurseForContent(path.join(dirPath, file.name));
 	else
-	    console.log('skipping', path.join(file.path, file.name));
+	    if (file.name.indexOf('-thumbnail.jpg') > -1)
+		foundThumbnail = true;
 
     }
+
+    if (foundThumbnail)
+	await buildContent(dirPath);
 
 };
 
-const buildHTML = async (dirPath) => {
+const buildContent = async (dirPath) => {
+    console.log(' --', dirPath);
     const files = await fs.readdirSync(dirPath, {withFileTypes: true});
 
     const content = [];
-    const contentRE = new RegExp(/(jpg|jpeg|png|gif)$/, 'i');
 
-    for (const file of files) {
-	if (!file.isDirectory() && contentRE.test(file.name) && file.name.indexOf('-thumbnail.jpg') == -1) {
-	    console.log('working on', file.path, file.name);
+    for (const file of files)
+	if (file.name.indexOf('-thumbnail.jpg') > -1)
 	    content.push([file.path, file.name]);
 
-	}
-
-    }
-
     if (content.length > 0) {
-	console.log('Building HTML for', dirPath);
-
 	const template = fs.readFileSync(templateHTML);
 	let html = '';
 	for (const entry of content) {
@@ -42,14 +41,61 @@ const buildHTML = async (dirPath) => {
 	    html += `<a href='${entry[1]}'><img src='${thumb}' width=128 height=128 class='rounded'></a>\n`;
 
 	}
-	console.log('creating', path.join(dirPath, 'index.html'));
 	fs.writeFileSync(path.join(dirPath, 'index.html'), template.toString().replace('@@content', html));
 
     }
+    else
+	console.log('didnt make an index for', dirPath, 'because i didnt see thumbnails');
+
+};
+
+const recurseForIndex = async (dirPath) => {
+    const files = await fs.readdirSync(dirPath, {withFileTypes: true});
+
+    let foundHTML = false;
+
+    for (const file of files) {
+	if (file.isDirectory())
+	    recurseForIndex(path.join(dirPath, file.name));
+	else
+	    if (file.name == 'index.html')
+		foundHTML = true;
+
+    }
+
+    if (foundHTML)
+	await buildIndex(dirPath);
+
+};
+
+const buildIndex = async (dirPath) => {
+    console.log(' --', dirPath);
+    const files = await fs.readdirSync(dirPath, {withFileTypes: true});
+
+    const indexes = [];
+
+    for (const file of files)
+	if (file.name.indexOf('-thumbnail.jpg') > -1)
+	    indexes.push([file.path, file.name]);
+
+    if (indexes.length > 0) {
+	const template = fs.readFileSync(templateHTML);
+	let html = '';
+	for (const entry of indexes)
+	    html += `<a href='${entry[1]}'>${entry[0]}/${entry[1]}</a>\n`;
+
+	fs.writeFileSync(path.join(dirPath, 'index.html'), template.toString().replace('@@content', html));
+
+    }
+    else
+	console.log('didnt make an index for', dirPath, 'because i didnt see indexes');
 
 };
 
 (async () => {
-    await processDirectory(archiveDirPath);
+    console.log('building content');
+    await recurseForContent(archiveDirPath);
+    console.log('building indexes');
+    await recurseForIndex(archiveDirPath);
 
 })();
