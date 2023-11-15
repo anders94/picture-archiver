@@ -53,7 +53,8 @@ const processFile = async (dirPath, fileName) => {
 	fs.mkdirSync(path.join(archiveDirPath, year, month, day));
 
     try {
-	fs.copyFileSync(filePath, path.join(newFilePath, prefix + fileName));
+	if (!fs.existsSync(path.join(newFilePath, prefix + fileName)))
+	    fs.copyFileSync(filePath, path.join(newFilePath, prefix + fileName));
     }
     catch (err) {
 	console.error('Error copying file:', err);
@@ -61,37 +62,40 @@ const processFile = async (dirPath, fileName) => {
 
     const thumbnailFileName = path.join(newFilePath, prefix + fileName.split('.')[0] + '-thumbnail.jpg');
 
-    const imageRE = new RegExp(/\.(jpg|jpeg|png|gif)$/, 'i');
-    const heicRE =  new RegExp(/\.(heic)$/, 'i');
-    const movieRE = new RegExp(/\.(mov|mp4)$/, 'i');
+    if (!fs.existsSync(thumbnailFileName)) {
+	const imageRE = new RegExp(/\.(jpg|jpeg|png|gif)$/, 'i');
+	const heicRE =  new RegExp(/\.(heic)$/, 'i');
+	const movieRE = new RegExp(/\.(mov|mp4)$/, 'i');
 
-    if (imageRE.test(fileName)) {
-	await sharp(path.join(newFilePath, prefix + fileName)).resize(thumbnailWidth, thumbnailHeight).toFile(thumbnailFileName).catch((err) => {
-	    console.error('Error creating thumbnail:', err);
-	});
+	if (imageRE.test(fileName)) {
+	    await sharp(path.join(newFilePath, prefix + fileName)).resize(thumbnailWidth, thumbnailHeight).toFile(thumbnailFileName).catch((err) => {
+		console.error('Error creating thumbnail:', err);
+	    });
 
-    }
-    else if (heicRE.test(fileName)) {
-	const inputBuffer = fs.readFileSync(path.join(newFilePath, prefix + fileName));
-	const outputBuffer = await convert({buffer: inputBuffer, format: 'JPEG', quality: 1});
+	}
+	else if (heicRE.test(fileName)) {
+	    const inputBuffer = fs.readFileSync(path.join(newFilePath, prefix + fileName));
+	    const outputBuffer = await convert({buffer: inputBuffer, format: 'JPEG', quality: 1});
 
-	await fs.writeFileSync('./tmp.jpg', outputBuffer);
+	    await fs.writeFileSync('./tmp.jpg', outputBuffer);
 
-	await sharp('./tmp.jpg').resize(thumbnailWidth, thumbnailHeight).toFile(thumbnailFileName).catch((err) => {
-	    console.error('Error creating thumbnail:', err);
-	});
+	    await sharp('./tmp.jpg').resize(thumbnailWidth, thumbnailHeight).toFile(thumbnailFileName).catch((err) => {
+		console.error('Error creating thumbnail:', err);
+	    });
 
-    }
-    else if (movieRE.test(fileName)) {
-	await extractFrame({
-	    input: path.join(newFilePath, prefix + fileName),
-	    output: './tmp.jpg',
-	    offset: 500
-	});
+	}
+	else if (movieRE.test(fileName)) {
+	    await extractFrame({
+		input: path.join(newFilePath, prefix + fileName),
+		output: './tmp.jpg',
+		offset: 500
+	    });
 
-	await sharp('./tmp.jpg').resize(thumbnailWidth, thumbnailHeight).composite([{input: watermarkPath}]).toFile(thumbnailFileName).catch((err) => {
-	    console.error('Error creating thumbnail:', err);
-	});
+	    await sharp('./tmp.jpg').resize(thumbnailWidth, thumbnailHeight).composite([{input: watermarkPath}]).toFile(thumbnailFileName).catch((err) => {
+		console.error('Error creating thumbnail:', err);
+	    });
+
+	}
 
     }
 
