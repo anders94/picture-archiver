@@ -53,11 +53,16 @@ const processFile = async (dirPath, fileName) => {
 	fs.mkdirSync(path.join(archiveDirPath, year, month, day));
 
     try {
-	if (!fs.existsSync(path.join(newFilePath, prefix + fileName)))
+	if (!fs.existsSync(path.join(newFilePath, prefix + fileName))) {
 	    fs.copyFileSync(filePath, path.join(newFilePath, prefix + fileName));
+	    fs.chmodSync(path.join(newFilePath, prefix + fileName), '644');
+
+	}
+
     }
     catch (err) {
 	console.error('Error copying file:', err);
+
     }
 
     const thumbnailFileName = path.join(newFilePath, prefix + fileName.split('.')[0] + '-thumbnail.jpg');
