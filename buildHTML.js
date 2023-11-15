@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const archiveDirPath = './archive/';
+const archiveDirPath = 'archive/';
 const templateHTML = 'template.html';
 
 const recurseForContent = async (dirPath) => {
@@ -55,16 +55,15 @@ const recurseForIndex = async (dirPath) => {
     let foundHTML = false;
 
     for (const file of files) {
-	if (file.isDirectory())
-	    recurseForIndex(path.join(dirPath, file.name));
+	if (file.isDirectory() && await recurseForIndex(path.join(dirPath, file.name)))
+	    buildIndex(dirPath);
 	else
 	    if (file.name == 'index.html')
 		foundHTML = true;
 
     }
 
-    if (foundHTML)
-	await buildIndex(dirPath);
+    return foundHTML;
 
 };
 
@@ -75,15 +74,24 @@ const buildIndex = async (dirPath) => {
     const indexes = [];
 
     for (const file of files)
-	if (file.name.indexOf('-thumbnail.jpg') > -1)
-	    indexes.push([file.path, file.name]);
+	if (file.isDirectory()) {
+	    const subFiles = await fs.readdirSync(path.join(dirPath, file.name), {withFileTypes: true});
+	    for (const subFile of subFiles)
+		if (!subFile.isDirectory() && subFile.name == 'index.html')
+		    indexes.push([file.path, file.name]);
+
+	}
 
     if (indexes.length > 0) {
 	const template = fs.readFileSync(templateHTML);
-	let html = '';
-	for (const entry of indexes)
-	    html += `<a href='${entry[1]}'>${entry[0]}/${entry[1]}</a>\n`;
+	let html = '<ul  class="list-group">\n';
+	for (const entry of indexes) {
+	    const sanitizedPath = path.join(entry[0].replace(archiveDirPath, ''), entry[1]);
+	    html += `<li class="list-group-item"><a href='${sanitizedPath}'>${sanitizedPath}</a></li>\n`;
 
+	}
+
+	html += '</ul>\n';
 	fs.writeFileSync(path.join(dirPath, 'index.html'), template.toString().replace('@@content', html));
 
     }
