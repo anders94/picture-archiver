@@ -87,7 +87,10 @@ const processFile = async (dirPath, fileName) => {
 
     if (!fs.existsSync(thumbnailFileName)) {
 	if (imageRE.test(fileName)) {
-	    await sharp(path.join(newFilePath, prefix + fileName)).resize(thumbnailWidth, thumbnailHeight).toFile(thumbnailFileName).catch((err) => {
+	    await sharp(path.join(newFilePath, prefix + fileName))
+		.rotate()
+		.resize(thumbnailWidth, thumbnailHeight)
+		.toFile(thumbnailFileName).catch((err) => {
 		console.error('Error creating thumbnail:', err);
 	    });
 
@@ -99,7 +102,11 @@ const processFile = async (dirPath, fileName) => {
 		offset: 500
 	    });
 
-	    await sharp('./tmp.jpg').resize(thumbnailWidth, thumbnailHeight).composite([{input: watermarkPath}]).toFile(thumbnailFileName).catch((err) => {
+	    await sharp('./tmp.jpg')
+		.rotate()
+		.resize(thumbnailWidth, thumbnailHeight)
+		.composite([{input: watermarkPath}])
+		.toFile(thumbnailFileName).catch((err) => {
 		console.error('Error creating thumbnail:', err);
 	    });
 
