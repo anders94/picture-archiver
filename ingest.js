@@ -21,7 +21,7 @@ const processDirectory = async (dirPath) => {
 	    if (acceptableFilesRE.test(file.name))
 		await processFile(dirPath, file.name);
 	    else
-		console.log('skipping', file.name);
+		console.log('skipping', path.join(dirPath, file.name));
 
 	}
 
