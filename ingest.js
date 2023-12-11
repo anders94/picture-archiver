@@ -9,14 +9,21 @@ const thumbnailWidth = 256;
 const thumbnailHeight = 256;
 const watermarkPath = 'movie-watermark.png';
 
+const acceptableFilesRE = new RegExp(/\.(jpg|jpeg|png|gif|heic|mov|mp4)$/, 'i');
+
 const processDirectory = async (dirPath) => {
     const files = await fs.readdirSync(dirPath, { withFileTypes: true });
 
     for (const file of files) {
 	if (file.isDirectory())
 	    await processDirectory(path.join(dirPath, file.name));
-	else
-	    await processFile(dirPath, file.name);
+	else {
+	    if (acceptableFilesRE.test(file.name))
+		await processFile(dirPath, file.name);
+	    else
+		console.log('skipping', file.name);
+
+	}
 
     }
 
