@@ -52,6 +52,7 @@ const processFile = async (dirPath, fileName) => {
     if (!fs.existsSync(path.join(archiveDirPath, year, month, day)))
 	fs.mkdirSync(path.join(archiveDirPath, year, month, day));
 
+
     try {
 	if (!fs.existsSync(path.join(newFilePath, prefix + fileName))) {
 	    fs.copyFileSync(filePath, path.join(newFilePath, prefix + fileName));
@@ -65,26 +66,28 @@ const processFile = async (dirPath, fileName) => {
 
     }
 
+    const heicRE = new RegExp(/\.heic$/, 'i');
+    const imageRE = new RegExp(/\.(jpg|jpeg|png|gif)$/, 'i');
+    const movieRE = new RegExp(/\.(mov|mp4)$/, 'i');
+
+    // if its a HEIC, convert to PNG
+    if (heicRE.test(fileName)) {
+	const inputBuffer = fs.readFileSync(path.join(newFilePath, prefix + fileName));
+	const outputBuffer = await convert({buffer: inputBuffer, format: 'PNG'});
+
+	const heicFileName = fileName;
+	fileName = heicFileName.replace(/\.HEIC$/i, '.png');
+
+	fs.writeFileSync(path.join(newFilePath, prefix + fileName), outputBuffer);
+	fs.unlinkSync(path.join(newFilePath, prefix + heicFileName));
+
+    }
+
     const thumbnailFileName = path.join(newFilePath, prefix + fileName.split('.')[0] + '-thumbnail.jpg');
 
     if (!fs.existsSync(thumbnailFileName)) {
-	const imageRE = new RegExp(/\.(jpg|jpeg|png|gif)$/, 'i');
-	const heicRE =  new RegExp(/\.(heic)$/, 'i');
-	const movieRE = new RegExp(/\.(mov|mp4)$/, 'i');
-
 	if (imageRE.test(fileName)) {
 	    await sharp(path.join(newFilePath, prefix + fileName)).resize(thumbnailWidth, thumbnailHeight).toFile(thumbnailFileName).catch((err) => {
-		console.error('Error creating thumbnail:', err);
-	    });
-
-	}
-	else if (heicRE.test(fileName)) {
-	    const inputBuffer = fs.readFileSync(path.join(newFilePath, prefix + fileName));
-	    const outputBuffer = await convert({buffer: inputBuffer, format: 'JPEG', quality: 1});
-
-	    await fs.writeFileSync('./tmp.jpg', outputBuffer);
-
-	    await sharp('./tmp.jpg').resize(thumbnailWidth, thumbnailHeight).toFile(thumbnailFileName).catch((err) => {
 		console.error('Error creating thumbnail:', err);
 	    });
 
