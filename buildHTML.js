@@ -28,20 +28,20 @@ const buildContent = async (dirPath) => {
     const files = await fs.readdirSync(dirPath, {withFileTypes: true});
 
     const content = [];
+    const contentRE = new RegExp(/\.(jpg|jpeg|png|gif|heic|mov|mp4)$/, 'i');
 
     for (const file of files)
-	if (file.name.indexOf('-thumbnail.jpg') > -1)
+	if (contentRE.test(file.name) && file.name.indexOf('-thumbnail.jpg') == -1)
 	    content.push([file.path, file.name]);
+
+    console.log(content);
 
     if (content.length > 0) {
 	const template = fs.readFileSync(templateHTML);
 	let html = '';
 	for (const entry of content) {
-	    if (entry[1].indexOf('-thumbnail.jpg') > -1) {
-		const thumb = entry[1].split('.')[0] + '-thumbnail.jpg';
-		html += `<a href='${entry[1]}'><img src='${thumb}' width=128 height=128 class='rounded'></a>\n`;
-
-	    }
+	    const thumb = entry[1].split('.')[0] + '-thumbnail.jpg';
+	    html += `<a href='${entry[1]}'><img src='${thumb}' width=128 height=128 class='rounded'></a>\n`;
 
 	}
 	fs.writeFileSync(path.join(dirPath, 'index.html'), template.toString().replace('@@content', html));
