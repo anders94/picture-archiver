@@ -4,7 +4,7 @@ const sharp = require('sharp');
 const convert = require('heic-convert');
 const extractFrame = require('ffmpeg-extract-frame')
 
-const archiveDirPath = './archive/';
+let archiveDirPath = './archive/';
 const thumbnailWidth = 256;
 const thumbnailHeight = 256;
 const watermarkPath = 'movie-watermark.png';
@@ -118,10 +118,18 @@ const processFile = async (dirPath, fileName) => {
 
 (async () => {
     if (! process.argv[2]) {
-	console.error('Please provide a directory path as an argument');
+	console.error('Usage: node ingest source/ [destination/]');
 	return 1;
 
     }
+
+    if (process.argv[3])
+	if (!fs.existsSync(process.argv[3])) {
+	    console.log('Error:', process.argv[3], 'doesn\'t exist!');
+	    return 1;
+	}
+	else
+	    archiveDirPath = process.argv[3];
 
     await processDirectory(process.argv[2]);
 
