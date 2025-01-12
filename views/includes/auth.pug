@@ -14,12 +14,7 @@
             #nav-signup.tab-pane(role='tabpanel', aria-labelledby='nav-signup-tab', tabindex=0)
               form#signupForm.needs-validation(method='post', action='/authenticate/signup', novalidate)
                 .p-2
-                  p Create a new family administrator account by filling out the fields below.
-                  .form-floating.mb-3
-                    input#familyName.form-control(type='text', name='familyName', placeholder='Family Name', required)
-                    label(for='familyName') Family Name (Usually your last name)
-                    .invalid-tooltip We need a name for your family! Perhaps use your last name.
-                  p You will be able to invite others to be part of your family. By default, invited family members can only interact with others within your family.
+                  p Create an account by filling out the fields below.
                   .form-floating.mb-3
                     input#yourName.form-control(type='text', name='yourName', placeholder='Your Name', required)
                     label(for='yourName') Your Name

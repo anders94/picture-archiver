@@ -8,6 +8,8 @@ const app = express();
 const port = process.env.PORT ? process.env.PORT : 3000;
 const host = process.env.HOST ? process.env.HOST : '0.0.0.0';
 
+let archiveDirPath = './archive/';
+
 (async () => {
     const commit = process.env.GIT_COMMIT ? process.env.GIT_COMMIT : await git.log({fs, dir: '.', depth: 1, ref: 'main'});
 
@@ -26,14 +28,65 @@ const host = process.env.HOST ? process.env.HOST : '0.0.0.0';
 
     });
 
-    app.get('/', function(req, res, next) {
-	res.render('index');
+    app.get('/', async (req, res, next) => {
+	const files = await fs.readdirSync(archiveDirPath, {withFileTypes: true});
+	const dirs = [];
+
+	for (const file of files) {
+            if (file.isDirectory())
+		dirs.push(file);
+
+	}
+
+	res.render('index', {dirs: dirs});
 	next();
 
     });
 
-    app.get('/:page', function(req, res, next) {
-	res.render(req.params.page, {page: req.params.page});
+    app.get('/:year', async (req, res, next) => {
+	const { year } = req.params;
+	const files = await fs.readdirSync(archiveDirPath + year, {withFileTypes: true});
+	const dirs = [];
+
+	for (const file of files) {
+            if (file.isDirectory())
+		dirs.push(file);
+
+	}
+
+	res.render('index', {dirs: dirs});
+	next();
+
+    });
+
+    app.get('/:year/:month', async (req, res, next) => {
+	const { year, month } = req.params;
+	const files = await fs.readdirSync(archiveDirPath + year + '/' + month, {withFileTypes: true});
+	const dirs = [];
+
+	for (const file of files) {
+            if (file.isDirectory())
+		dirs.push(file);
+
+	}
+
+	res.render('index', {dirs: dirs});
+	next();
+
+    });
+
+    app.get('/:year/:month/:day', async (req, res, next) => {
+	const { year, month, day } = req.params;
+	const files = await fs.readdirSync(archiveDirPath + year + '/' + month + '/' + day, {withFileTypes: true});
+	const thumbnails = [];
+
+	for (const file of files) {
+            if (file.name.endsWith('-thumbnail.jpg'))
+		thumbnails.push(file.name.replace('-thumbnail.jpg'));
+
+	}
+
+	res.render('files', {files: thumbnails});
 	next();
 
     });
