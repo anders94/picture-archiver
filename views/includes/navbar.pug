@@ -1,0 +1,34 @@
+nav#navbar.navbar.navbar-expand-sm.fixed-top.bg-body-tertiary.border-bottom
+  .container
+    a.navbar-brand(href='/')
+      img.d-inline-block.align-text-top(src='/img/a-1024.png', alt='Logo', width=64, height=64)
+    button.navbar-toggler(type='button', data-bs-toggle='collapse', data-bs-target='#navbarCollapse', aria-controls='navbarCollapse', aria-expanded='false', aria-label='Toggle navigation')
+      span.navbar-toggler-icon
+    .collapse.navbar-collapse#navbarCollapse
+      if session && session.user
+        ul.navbar-nav.me-auto.mb-2.mb-md-0
+          li.nav-item
+            a(class='nav-link' + (page == 'chat' ? ' active' : ''), aria-current='chat', href='/chat') Chat
+          li.nav-item
+            a(class='nav-link' + (page == 'profile' ? ' active' : ''), aria-current='profile', href='/profile') Profile
+          if session.user.attributes && session.user.attributes.familyAdministrator
+            li.nav-item
+              a(class='nav-link' + (page == 'family' ? ' active' : ''), aria-current='family', href='/family') Family
+          if session.user.attributes && session.user.attributes.administrator
+            li.nav-item
+              a.nav-link.text-body-secondary(href='/admin') Admin
+      else
+        ul.navbar-nav.me-auto.mb-2.mb-md-0
+      ul.navbar-nav.justify-content-end
+        if session && session.user
+          li.nav-item
+            a.nav-link.disabled(aria-disabled=true)= session.user.full_name
+          li.nav-item
+            a.btn.btn-outline-primary(href='/authenticate/logout') Logout
+        else
+          li.nav-item
+            a.btn.btn-outline-primary(href='#', data-bs-toggle='modal', data-bs-target='#authModal')
+              svg.bi.bi-person-circle(xmlns='http://www.w3.org/2000/svg', width=16, height=16, fill='currentColor', viewBox='0 0 16 16')
+                path(d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z')
+                path(fill-rule='evenodd', d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z')
+              | &nbsp; Login

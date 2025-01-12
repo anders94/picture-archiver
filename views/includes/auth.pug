@@ -1,0 +1,102 @@
+.modal#authModal.fade(tabindex=-1, aria-labelledby='exampleModalLabel', aria-hidden='true')
+  .modal-dialog
+    .modal-content
+      .modal-header
+        h1#authModalLabel.modal-title.fs-5 Email Authentication
+        button.btn-close(type='button', data-bs-dismiss='modal', aria-label='Close')
+      .modal-body
+        nav
+          #nav-tab.nav.nav-tabs(role='tablist')
+            button#nav-signup-tab.nav-link(data-bs-toggle='tab', data-bs-target='#nav-signup', type='button', role='tab', aria-controls='nav-signup', aria-selected=false) Signup
+            button#nav-login-tab.nav-link.active(data-bs-toggle='tab', data-bs-target='#nav-login', type='button' role='tab', aria-controls='nav-login', aria-selected=true) Login
+            button#nav-forgot-tab.nav-link(data-bs-toggle='tab', data-bs-target='#nav-forgot', type='button', role='tab', aria-controls='nav-contact', aria-selected=false) Forgot Password
+          #nav-tabContent.tab-content
+            #nav-signup.tab-pane(role='tabpanel', aria-labelledby='nav-signup-tab', tabindex=0)
+              form#signupForm.needs-validation(method='post', action='/authenticate/signup', novalidate)
+                .p-2
+                  p Create a new family administrator account by filling out the fields below.
+                  .form-floating.mb-3
+                    input#familyName.form-control(type='text', name='familyName', placeholder='Family Name', required)
+                    label(for='familyName') Family Name (Usually your last name)
+                    .invalid-tooltip We need a name for your family! Perhaps use your last name.
+                  p You will be able to invite others to be part of your family. By default, invited family members can only interact with others within your family.
+                  .form-floating.mb-3
+                    input#yourName.form-control(type='text', name='yourName', placeholder='Your Name', required)
+                    label(for='yourName') Your Name
+                    .invalid-tooltip We need a name for you!
+                  .form-floating.mb-3
+                    input#signupEmail.form-control(type='email', name='signupEmail', placeholder='name@example.com', onKeyUp='emailChange("#signupEmail")', required)
+                    label(for='signupEmail') Email Address
+                    .invalid-tooltip Please enter a valid email address.
+                  .form-floating.mb-3
+                    input#signupPassword.form-control(type='password', name='signupPassword', placeholder='Password', required)
+                    label(for='signupPassword') Password
+                    .invalid-tooltip Enter a password to secure your account.
+                  .form-floating
+                    button.btn.btn-primary.float-end(type='submit') Signup
+            #nav-login.tab-pane.show.active(role='tabpanel', aria-labelledby='nav-login-tab', tabindex=0)
+              form#loginForm.needs-validation(method='post', action='/authenticate/login', novalidate)
+                .p-2
+                  p Give us your email and password to login.
+                  .form-floating.mb-3
+                    input#loginEmail.form-control(type='email', name='loginEmail', placeholder='name@example.com', onKeyUp='emailChange("#loginEmail")', required)
+                    label(for='loginEmail') Email Address
+                    .invalid-tooltip Please enter your email address.
+                  .form-floating.mb-3
+                    input#loginPassword.form-control(type='password', name='loginPassword', placeholder='Password', required)
+                    label(for='loginPassword') Password
+                    .invalid-tooltip We'll need your password to login.
+                  .form-floating
+                    button.btn.btn-primary.float-end(type='submit') Login
+            #nav-forgot.tab-pane(role='tabpanel', aria-labelledby='nav-forgot-tab', tabindex=0)
+              form#forgotPasswordForm.needs-validation(method='post', action='/authenticate/forgotPassword', novalidate)
+                .p-2
+                  p Enter your email address and we will email you a reset link.
+                  .form-floating.mb-3
+                    input#forgotEmail.form-control(type='email', name='forgotEmail', placeholder='name@example.com', onKeyUp='emailChange("#forgotEmail")', required)
+                    label(for='forgotEmail') Email Address
+                    .invalid-tooltip Please enter the email address you used when you signed up!
+                  .form-floating
+                    button.btn.btn-secondary.float-end(type='submit', disabled) Send Reset Link
+
+script.
+  (() => {
+    // Loop over forms and prevent submission if not validated
+    const forms = document.querySelectorAll('.needs-validation')
+
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        form.classList.add('was-validated');
+      }, false);
+    });
+
+    // focus on email or password when modal opens
+    $('#authModal').on('shown.bs.modal', e => {
+      if ($('#loginEmail').val() == '') {
+        $('#loginEmail').focus();
+      }
+      else {
+        $('#loginPassword').focus();
+      }
+    });
+
+    $('#signupEmail').val(localStorage.getItem('email') ? localStorage.getItem('email') : '');
+    $('#loginEmail').val(localStorage.getItem('email') ? localStorage.getItem('email') : '');
+    $('#forgotEmail').val(localStorage.getItem('email') ? localStorage.getItem('email') : '');
+
+  })();
+
+  const emailChange = (field) => {
+    localStorage.setItem('email', $(field).val());
+    if (field != '#signupEmail')
+      $('#signupEmail').val($(field).val());
+    if (field != '#loginEmail')
+      $('#loginEmail').val($(field).val());
+    if (field != '#forgotEmail')
+      $('#forgotEmail').val($(field).val());
+  };

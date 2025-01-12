@@ -1,0 +1,43 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+
+    title Allowance App
+
+    link(rel='apple-touch-icon', href='/img/a-1024.png')
+    link(rel='apple-touch-startup-image', href='/img/start-image-1206x2622.png')
+    meta(name='apple-mobile-web-app-title', content='Allowance')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    meta(name='mobile-web-app-capable', content='yes')
+    meta(name='apple-mobile-web-app-status-bar-style', content='white')
+
+    meta(property='og:url', content='https://allowance-app.com/')
+    meta(property='og:title', content='Allowance App')
+    meta(property='og:description', content='The bank of Dad.')
+    meta(property='og:image', content='https://allowance-app.com/img/meta-image.png')
+
+    link(href='/css/lib/bootstrap.min.css', rel='stylesheet')
+    link(href='/css/site.css', rel='stylesheet')
+    block stylesheets
+
+    script(src='/js/lib/bootstrap.bundle.min.js')
+    script(src='/js/lib/jquery.min.js')
+    block javascripts
+
+    // Google tag (gtag.js)
+      script(async, src='https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXX')
+      script.
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-xxxxxxxxxx');
+
+  body
+    include includes/auth
+    include includes/navbar
+
+    block content
+
+    include includes/footer
