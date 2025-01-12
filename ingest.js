@@ -4,6 +4,7 @@ const sharp = require('sharp');
 const convert = require('heic-convert');
 const extractFrame = require('ffmpeg-extract-frame')
 
+let counter = 0;
 let archiveDirPath = './archive/';
 const thumbnailWidth = 256;
 const thumbnailHeight = 256;
@@ -45,81 +46,89 @@ const processFile = async (dirPath, fileName) => {
 
     const newFilePath = path.join(archiveDirPath, `${year}/${month}/${day}`);
 
-    console.log(path.join(newFilePath, prefix + fileName));
-
-    if (!fs.existsSync(archiveDirPath))
-	fs.mkdirSync(archiveDirPath);
-
-    if (!fs.existsSync(path.join(archiveDirPath, year)))
-	fs.mkdirSync(path.join(archiveDirPath, year));
-
-    if (!fs.existsSync(path.join(archiveDirPath, year, month)))
-	fs.mkdirSync(path.join(archiveDirPath, year, month));
-
-    if (!fs.existsSync(path.join(archiveDirPath, year, month, day)))
-	fs.mkdirSync(path.join(archiveDirPath, year, month, day));
-
-
-    try {
-	if (!fs.existsSync(path.join(newFilePath, prefix + fileName))) {
-	    fs.copyFileSync(filePath, path.join(newFilePath, prefix + fileName));
-	    fs.chmodSync(path.join(newFilePath, prefix + fileName), '644');
-
-	}
-
-    }
-    catch (err) {
-	console.error('Error copying file:', err);
-
-    }
-
-    const heicRE = new RegExp(/\.heic$/, 'i');
-    const imageRE = new RegExp(/\.(jpg|jpeg|png|gif)$/, 'i');
-    const movieRE = new RegExp(/\.(mov|mp4)$/, 'i');
-
-    // if its a HEIC, convert to PNG
-    if (heicRE.test(fileName)) {
-	const inputBuffer = fs.readFileSync(path.join(newFilePath, prefix + fileName));
-	const outputBuffer = await convert({buffer: inputBuffer, format: 'PNG'});
-
-	const heicFileName = fileName;
-	fileName = heicFileName.replace(/\.HEIC$/i, '.png');
-
-	fs.writeFileSync(path.join(newFilePath, prefix + fileName), outputBuffer);
-	fs.unlinkSync(path.join(newFilePath, prefix + heicFileName));
-
-    }
-
     const thumbnailFileName = path.join(newFilePath, prefix + fileName.split('.')[0] + '-thumbnail.jpg');
 
+    console.log(counter++, path.join(newFilePath, prefix + fileName));
+
     if (!fs.existsSync(thumbnailFileName)) {
-	if (imageRE.test(fileName)) {
-	    await sharp(path.join(newFilePath, prefix + fileName))
-		.rotate()
-		.resize(thumbnailWidth, thumbnailHeight)
-		.toFile(thumbnailFileName).catch((err) => {
-		console.error('Error creating thumbnail:', err);
-	    });
+	if (!fs.existsSync(archiveDirPath))
+	    fs.mkdirSync(archiveDirPath);
+
+	if (!fs.existsSync(path.join(archiveDirPath, year)))
+	    fs.mkdirSync(path.join(archiveDirPath, year));
+
+	if (!fs.existsSync(path.join(archiveDirPath, year, month)))
+	    fs.mkdirSync(path.join(archiveDirPath, year, month));
+
+	if (!fs.existsSync(path.join(archiveDirPath, year, month, day)))
+	    fs.mkdirSync(path.join(archiveDirPath, year, month, day));
+
+	try {
+	    if (!fs.existsSync(path.join(newFilePath, prefix + fileName))) {
+		fs.copyFileSync(filePath, path.join(newFilePath, prefix + fileName));
+		fs.chmodSync(path.join(newFilePath, prefix + fileName), '644');
+
+	    }
 
 	}
-	else if (movieRE.test(fileName)) {
-	    await extractFrame({
-		input: path.join(newFilePath, prefix + fileName),
-		output: './tmp.jpg',
-		offset: 500
+	catch (err) {
+	    console.error('Error copying file:', err);
+
+	}
+
+	const heicRE = new RegExp(/\.heic$/, 'i');
+	const imageRE = new RegExp(/\.(jpg|jpeg|png|gif)$/, 'i');
+	const movieRE = new RegExp(/\.(mov|mp4)$/, 'i');
+
+	// if its a HEIC, convert to PNG
+	if (heicRE.test(fileName)) {
+	    const inputBuffer = fs.readFileSync(path.join(newFilePath, prefix + fileName));
+	    const outputBuffer = await convert({
+		buffer: inputBuffer,
+		format: 'JPEG',
+		quality: 0.5
 	    });
 
-	    await sharp('./tmp.jpg')
-		.rotate()
-		.resize(thumbnailWidth, thumbnailHeight)
-		.composite([{input: watermarkPath}])
-		.toFile(thumbnailFileName).catch((err) => {
-		console.error('Error creating thumbnail:', err);
-	    });
+	    const heicFileName = fileName;
+	    fileName = heicFileName.replace(/\.HEIC$/i, '.jpg');
+
+	    fs.writeFileSync(path.join(newFilePath, prefix + fileName), outputBuffer);
+	    fs.unlinkSync(path.join(newFilePath, prefix + heicFileName));
+
+	}
+
+	if (!fs.existsSync(thumbnailFileName)) {
+	    if (imageRE.test(fileName)) {
+		await sharp(path.join(newFilePath, prefix + fileName))
+		    .rotate()
+		    .resize(thumbnailWidth, thumbnailHeight)
+		    .toFile(thumbnailFileName).catch((err) => {
+			console.error('Error creating thumbnail:', err);
+		    });
+
+	    }
+	    else if (movieRE.test(fileName)) {
+		await extractFrame({
+		    input: path.join(newFilePath, prefix + fileName),
+		    output: './tmp.jpg',
+		    offset: 500
+		});
+
+		await sharp('./tmp.jpg')
+		    .rotate()
+		    .resize(thumbnailWidth, thumbnailHeight)
+		    .composite([{input: watermarkPath}])
+		    .toFile(thumbnailFileName).catch((err) => {
+			console.error('Error creating thumbnail:', err);
+		    });
+
+	    }
 
 	}
 
     }
+    else
+	console.log('skipping,', thumbnailFileName, 'exists');
 
 };
 
