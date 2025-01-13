@@ -9,4 +9,4 @@ block content
     ul
       each path in files
         a(href='/' + path.path + '/' + path.name)
-          img.img-thumbnail(src='/' + path.path + '/' + path.name, width=128, height=128)
+          img.img-thumbnail(src='/' + path.path + '/' + path.thumbnail.name, width=128, height=128)

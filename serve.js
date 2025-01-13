@@ -21,8 +21,44 @@ const handle = async (req, res, next) => {
 	for (const path of paths) {
 	    if (path.isDirectory())
 		dirs.push(path);
-	    else if (path.name.endsWith('-thumbnail.jpg'))
-		files.push(path);
+	    else if (path.name.endsWith('-thumbnail.jpg')) {
+		const file = {thumbnail: path, path: path.path};
+		const base = path.name.replace(/-thumbnail.jpg$/, '');
+		// jpg|jpeg|png|gif|heic|mov|mp4
+		if (paths.some(item => item.name === base + '.jpeg')) {
+		    file.name = base + '.jpeg';
+		    files.push(file);
+
+		}
+		else if (paths.some(item => item.name === base + '.jpg')) {
+		    file.name = base + '.jpg';
+		    files.push(file);
+
+		}
+		else if (paths.some(item => item.name === base + '.png')) {
+		    file.name = base + '.png';
+		    files.push(file);
+
+		}
+		else if (paths.some(item => item.name === base + '.heic')) {
+		    file.name = base + '.heic';
+		    files.push(file);
+
+		}
+		else if (paths.some(item => item.name === base + '.mp4')) {
+		    file.name = base + '.mp4';
+		    files.push(file);
+
+		}
+		else if (paths.some(item => item.name === base + '.mov')) {
+		    file.name = base + '.mov';
+		    files.push(file);
+
+		}
+		else
+		    console.log('original not found', base);
+
+	    }
 
 	}
 
