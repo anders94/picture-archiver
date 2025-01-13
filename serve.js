@@ -8,7 +8,38 @@ const app = express();
 const port = process.env.PORT ? process.env.PORT : 3000;
 const host = process.env.HOST ? process.env.HOST : '0.0.0.0';
 
-let archiveDirPath = './archive/';
+let archiveDirPath = 'archive/';
+
+const handle = async (req, res, next) => {
+    const { a, b, c, d, e, f, g } = req.params;
+
+    try {
+	const paths = await fs.readdirSync(archiveDirPath + [a, b, c, d, e, f, g].filter(Boolean).join('/'), {withFileTypes: true});
+	const dirs = [];
+	const files = [];
+
+	for (const path of paths) {
+	    if (path.isDirectory())
+		dirs.push(path);
+	    else if (path.name.endsWith('-thumbnail.jpg'))
+		files.push(path);
+
+	}
+
+	res.render('paths', {dirs: dirs, files: files});
+	    
+    }
+    catch (e) {
+	console.log(e);
+	res.render('error', {message: 'Whoops, that\'s an error!'});
+
+    }
+    finally {
+	next();
+
+    }
+
+}
 
 (async () => {
     const commit = process.env.GIT_COMMIT ? process.env.GIT_COMMIT : await git.log({fs, dir: '.', depth: 1, ref: 'main'});
@@ -28,74 +59,14 @@ let archiveDirPath = './archive/';
 
     });
 
-    app.get('/', async (req, res, next) => {
-	const paths = await fs.readdirSync(archiveDirPath, {withFileTypes: true});
-	const dirs = [];
-	const files = [];
-
-	for (const path of paths) {
-            if (path.isDirectory())
-		dirs.push(path);
-	    else
-		files.push(path);
-
-	}
-
-	res.render('index', {dirs: dirs, files: files});
-	next();
-
-    });
-
-    app.get('/:year', async (req, res, next) => {
-	const { year } = req.params;
-	const files = await fs.readdirSync(archiveDirPath + year, {withFileTypes: true});
-	const dirs = [];
-
-	for (const file of files) {
-            if (file.isDirectory())
-		dirs.push(file);
-
-	}
-
-	res.render('index', {dirs: dirs});
-	next();
-
-    });
-
-    app.get('/:year/:month', async (req, res, next) => {
-	const { year, month } = req.params;
-	const files = await fs.readdirSync(archiveDirPath + year + '/' + month, {withFileTypes: true});
-	const dirs = [];
-
-	for (const file of files) {
-            if (file.isDirectory())
-		dirs.push(file);
-
-	}
-
-	res.render('index', {dirs: dirs});
-	next();
-
-    });
-
-    app.get('/:year/:month/:day', async (req, res, next) => {
-	const { year, month, day } = req.params;
-	const paths = await fs.readdirSync(archiveDirPath + year + '/' + month + '/' + day, {withFileTypes: true});
-	const dirs = [];
-	const files = [];
-
-	for (const path of paths) {
-	    if (path.isDirectory())
-		dirs.push(path.name);
-	    else if (path.name.endsWith('-thumbnail.jpg'))
-		files.push(path.name);
-
-	}
-
-	res.render('paths', {dirs: dirs, files: files});
-	next();
-
-    });
+    app.get('/', handle);
+    app.get('/:a/', handle);
+    app.get('/:a/:b/', handle);
+    app.get('/:a/:b/:c/', handle);
+    app.get('/:a/:b/:c/:d/', handle);
+    app.get('/:a/:b/:c/:d/:e', handle);
+    app.get('/:a/:b/:c/:d/:e/:f', handle);
+    app.get('/:a/:b/:c/:d/:e/:f/:g', handle);
 
     httpServer.listen(port, host, () => {
 	console.log(`Listening on ${host}:${port}`)
