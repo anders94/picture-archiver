@@ -29,16 +29,19 @@ let archiveDirPath = './archive/';
     });
 
     app.get('/', async (req, res, next) => {
-	const files = await fs.readdirSync(archiveDirPath, {withFileTypes: true});
+	const paths = await fs.readdirSync(archiveDirPath, {withFileTypes: true});
 	const dirs = [];
+	const files = [];
 
-	for (const file of files) {
-            if (file.isDirectory())
-		dirs.push(file);
+	for (const path of paths) {
+            if (path.isDirectory())
+		dirs.push(path);
+	    else
+		files.push(path);
 
 	}
 
-	res.render('index', {dirs: dirs});
+	res.render('index', {dirs: dirs, files: files});
 	next();
 
     });
@@ -77,16 +80,19 @@ let archiveDirPath = './archive/';
 
     app.get('/:year/:month/:day', async (req, res, next) => {
 	const { year, month, day } = req.params;
-	const files = await fs.readdirSync(archiveDirPath + year + '/' + month + '/' + day, {withFileTypes: true});
-	const thumbnails = [];
+	const paths = await fs.readdirSync(archiveDirPath + year + '/' + month + '/' + day, {withFileTypes: true});
+	const dirs = [];
+	const files = [];
 
-	for (const file of files) {
-            if (file.name.endsWith('-thumbnail.jpg'))
-		thumbnails.push(file.name.replace('-thumbnail.jpg'));
+	for (const path of paths) {
+	    if (path.isDirectory())
+		dirs.push(path.name);
+	    else if (path.name.endsWith('-thumbnail.jpg'))
+		files.push(path.name);
 
 	}
 
-	res.render('files', {files: thumbnails});
+	res.render('paths', {dirs: dirs, files: files});
 	next();
 
     });

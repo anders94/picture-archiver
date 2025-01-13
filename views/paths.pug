@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  .container
+    h1 Dirs
+    ul
+      each path in dirs
+        li.list-group-item
+          a(href=path + '/')= path
+    h1 Files
+    ul
+      each path in files
+        li.list-group-item
+          a(href=path)= path

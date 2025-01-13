@@ -1,8 +1,0 @@
-extends layout
-
-block content
-  .container
-    ul
-      each file in files
-        li
-          a(href=file + '/')= JSON.stringify(file)
