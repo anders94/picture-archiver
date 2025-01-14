@@ -34,7 +34,7 @@ const processFile = async (dirPath, fileName) => {
     const filePath = path.join(dirPath, fileName);
     const stats = fs.statSync(filePath);
 
-    const creationDate = new Date(stats.birthtimeMs);
+    const creationDate = new Date(Math.min(stats.atimeMs, stats.mtimeMs, stats.ctimeMs, stats.birthtimeMs));
     const year = creationDate.getFullYear().toString();
     const month = (creationDate.getMonth() + 1).toString().padStart(2, '0');
     const day = creationDate.getDate().toString().padStart(2, '0');

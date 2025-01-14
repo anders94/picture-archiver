@@ -3,6 +3,7 @@
 .DS_Store
 node_modules/
 archive/
+archive
 source/
 tmp.jpg
 public/archive
