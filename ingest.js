@@ -108,10 +108,11 @@ const processFile = async (dirPath, fileName) => {
 
 	    }
 	    else if (movieRE.test(fileName)) {
+		const stats = fs.statSync(filePath);
 		await extractFrame({
 		    input: path.join(newFilePath, prefix + fileName),
 		    output: './tmp.jpg',
-		    offset: 500
+		    offset: stats.size > 10000000 ? 500 : 0
 		});
 
 		await sharp('./tmp.jpg')
