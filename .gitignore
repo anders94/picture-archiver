@@ -6,3 +6,6 @@ archive/
 source/
 tmp.jpg
 public/archive
+run
+log/
+env/
