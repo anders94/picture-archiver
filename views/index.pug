@@ -2,7 +2,12 @@ extends layout
 
 block content
   .container
+    h1= path ? path : 'Pictures'
     ul
-      each dir in dirs
+      each path in dirs
         li.list-group-item
-          a(href=dir.name + '/')= dir.name
+          a(href=path.name + '/')= path.name
+    ul
+      each path in files
+        a(href='/' + path.path + '/' + path.name)
+          img.img-thumbnail(src='/' + path.path + '/' + path.thumbnail.name, width=128, height=128)

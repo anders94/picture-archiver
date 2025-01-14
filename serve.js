@@ -62,7 +62,7 @@ const handle = async (req, res, next) => {
 
 	}
 
-	res.render('paths', {
+	res.render('index', {
 	    path: [a, b, c, d, e, f, g].filter(Boolean).join('/'),
 	    dirs: dirs, files: files
 	});
