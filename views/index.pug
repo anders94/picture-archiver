@@ -4,15 +4,14 @@ block content
   .container
     h1
       a(href='/') Pictures
-      | &nbsp;
+      - let base = '/' + path.join('/')
       each p, i in path
-        | /&nbsp;
+        | &nbsp;/&nbsp;
         a(href='/' + path.slice(0, i + 1).join('/'))= p
-        | &nbsp;
     ul
       each path in dirs
         li.list-group-item
-          a(href=path.name + '/')= path.name
+          a(href=base + '/' + path.name + '/')= path.name
     ul
       each path in files
         a(href='/' + path.path + '/' + path.name)
