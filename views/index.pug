@@ -1,17 +1,17 @@
 extends layout
 
 block content
+  - let base = path.length > 0 ? '/' + path.join('/') + '/' : '/'
   .container
     h1
       a(href='/') Pictures
-      - let base = '/' + path.join('/')
       each p, i in path
         | &nbsp;/&nbsp;
         a(href='/' + path.slice(0, i + 1).join('/'))= p
     ul
       each path in dirs
         li.list-group-item
-          a(href=base + '/' + path.name + '/')= path.name
+          a(href=base + path.name + '/')= path.name
     ul
       each path in files
         a(href='/' + path.path + '/' + path.name)
